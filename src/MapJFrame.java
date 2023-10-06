@@ -5,10 +5,6 @@ import java.awt.GridLayout;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 
 /**
  *
