@@ -1,31 +1,27 @@
-
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 /**
  *
  * @author Tisarji
  */
 
+import java.awt.image.BufferedImage;
+
 public class CharacterClass {
 	private String	nameCharacter;
-	private int		healthPoint;
-	private int		attackDamage;
-	private int		speedAttack;
-	private int		walkSpeed;
-	private int		xPosition;
-	private int		yPosition;
+	private int	healthPoint;
+	private int	attackDamage;
+	private int	speedAttack;
+	private int	walkSpeed = 10;
+	private int	xPosition;
+	private int	yPosition;
+	private BufferedImage characterImage;
 
-	public void	CharacterClass(String nameCharacter, int healthPoint, int attackDamage, int speedAttack, int walkSpeed)
-	{
+	public CharacterClass(String nameCharacter, int healthPoint, int attackDamage, int speedAttack, int walkSpeed, BufferedImage characterImage) {
 		this.nameCharacter = nameCharacter;
 		this.attackDamage = attackDamage;
 		this.healthPoint = healthPoint;
 		this.speedAttack = speedAttack;
 		this.walkSpeed = walkSpeed;
+		this.characterImage = characterImage;
 		this.xPosition = -1;
 		this.yPosition = -1;
 	}
@@ -41,10 +37,11 @@ public class CharacterClass {
 		this.yPosition = y;
 	}
 
-	public void placeCharacter(GameTable gameTable)
+	public void placeCharacter(GameTable gameTable) 
 	{
-		if (!isPlaceOnTable())
+		if (!isPlaceOnTable()) {
 			gameTable.setCellValue(xPosition, yPosition, 'c');
+		}
 	}
 
 	public String getName()

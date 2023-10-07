@@ -1,15 +1,12 @@
-
-
-
 import java.awt.GridLayout;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
-
 
 /**
  *
  * @author Tisarji, Ndod
  */
+
 public class MapJFrame extends javax.swing.JFrame {
 
 private GameMapPanel mapPanel;
