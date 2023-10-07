@@ -17,62 +17,75 @@ import javax.swing.table.DefaultTableModel;
 
 public class GameMapPanel extends JPanel {
 
-	private GameTable gameTable;
-	private JTable table;
-    private Character character;
-    private DefaultTableModel tableModel;
-	private ImageIcon[] images;
+    private GameTable gameTable;
+    private JTable mainTable;
+    private JTable characterTable;
+    private DefaultTableModel mainTableModel;
+    private DefaultTableModel characterTableModel;
+    private ImageIcon[] images;
+	private Character character;
 
 	private int tileSize;
 
 	public GameMapPanel(int rows, int columns)
 	{
-/* --------------------------- Set Scale Table --------------------------- */
+/* --------------------------- Main Table for map --------------------------- */
 		
-		tableModel = new DefaultTableModel(rows, columns);
-		table = new JTable(tableModel);
+		mainTableModel = new DefaultTableModel(rows, columns);
+		mainTable = new JTable(mainTableModel);
 
         int newCellWidth = (int)(160 * 0.8);
         int newCellHeight = (int)(115 * 0.8);
-        table.setRowHeight(0, newCellHeight);
-        table.getColumnModel().getColumn(0).setPreferredWidth(newCellWidth);
+        mainTable.setRowHeight(0, newCellHeight);
+        mainTable.getColumnModel().getColumn(0).setPreferredWidth(newCellWidth);
 
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setBorder(new LineBorder(Color.WHITE));
-        table.setShowGrid(true);
-        table.setBackground(Color.decode("#006400"));
-        table.setGridColor(Color.BLACK);
+        mainTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        mainTable.setBorder(new LineBorder(Color.WHITE));
+        mainTable.setShowGrid(true);
+        mainTable.setBackground(Color.decode("#006400"));
+        mainTable.setGridColor(Color.BLACK);
 		
 		for (int row = 0; row < rows; row++) {
 			int newHeight = (int) (115 * 0.8);
-			table.setRowHeight(row, newHeight);
+			mainTable.setRowHeight(row, newHeight);
 		}
 		for (int col = 0; col < columns; col++) {
 			int newWidth = (int) (160 * 0.8);
-			table.getColumnModel().getColumn(col).setPreferredWidth(newWidth);
+			mainTable.getColumnModel().getColumn(col).setPreferredWidth(newWidth);
 		}
+
+/* --------------------------- Character Table Model --------------------------- */
+		
+//		characterTableModel = new DefaultTableModel(1, 6);
+//        characterTable = new JTable(characterTableModel);
+//	
+//		for (int col = 0; col < columns; col++) {
+//			int newWidth = (int) (160 * 0.8);
+//			characterTable.getColumnModel().getColumn(col).setPreferredWidth(newWidth);
+//		}		
 		
 /* --------------------------- Set Image in Table --------------------------- */
 
 		character = new Character(this);
 		character.adam(1, 1);
 
-/* --------------------------- Set Center Monitor --------------------------- */
+/* --------------------------- Set Add Table in panel --------------------------- */
 
         setBorder(BorderFactory.createEmptyBorder(90, 0, 0, 0));
-        add(table, BorderLayout.CENTER);
+        add(mainTable, BorderLayout.CENTER);
+//		add(characterTable, BorderLayout.NORTH);
 
 /* -------------------------------------------------------------------------- */
 
-        table.addMouseListener(new MouseAdapter() {
+        mainTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                table.setBorder(new LineBorder(Color.BLUE));
+                mainTable.setBorder(new LineBorder(Color.BLUE));
 
                 new Thread(() -> {
                     try {
                         Thread.sleep(200);
-                        table.setBorder(new LineBorder(Color.WHITE));
+                        mainTable.setBorder(new LineBorder(Color.WHITE));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -81,24 +94,32 @@ public class GameMapPanel extends JPanel {
         });
 	}
 
-	public int getTileSize() {
+    public int getTileSize() {
         return tileSize;
     }
 
     public GameTable getGameTable() {
         return gameTable;
     }
-	
+
     public void setGameTable(GameTable gameTable) {
         this.gameTable = gameTable;
     }
 
-    public JTable getTable() {
-        return table;
+    public JTable getMainTable() {
+        return mainTable;
     }
-	
-    public DefaultTableModel getTableModel() {
-        return tableModel;
+
+    public DefaultTableModel getMainTableModel() {
+        return mainTableModel;
+    }
+
+    public JTable getCharacterTable() {
+        return characterTable;
+    }
+
+    public DefaultTableModel getCharacterTableModel() {
+        return characterTableModel;
     }
 }
 
