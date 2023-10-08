@@ -5,7 +5,9 @@
 
 import javax.swing.Timer;
 import java.awt.Image;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.ImageIcon;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class Character {
@@ -26,7 +28,7 @@ public class Character {
         return new ImageIcon(scaledImage);
     }
 
-    public void adam(int row, int col) {
+    public void adam(JTable tableToUse, int row, int col) {
         int width = 80;
         int height = 80;
 
@@ -37,36 +39,20 @@ public class Character {
         images[2] = new ImageIcon("../MvM-Game/pic/Hero/Adam/Adam-3.png");
         images[3] = new ImageIcon("../MvM-Game/pic/Hero/Adam/Adam-4.png");
 
-        currentImageIndex = 0;
-        tableModel.setValueAt(scaleImage(images[currentImageIndex], width, height), row, col);
+		tableToUse.setDefaultRenderer(Object.class, new ImageRenderer());	
+		currentImageIndex = 0;
+		tableToUse.setValueAt(scaleImage(images[currentImageIndex], width, height), row, col);
 
-        animationTimer = new Timer(50, e -> toggleImage());
-        animationTimer.start();
-    }
-	
-    public void ben(int row, int col) {
-        int width = 80;
-        int height = 80;
+		animationTimer = new Timer(50, e -> toggleImage());
+		animationTimer.start();
 
-        gameMapPanel.getMainTable().setDefaultRenderer(Object.class, new ImageRenderer());
-        images = new ImageIcon[4];
-        images[0] = new ImageIcon("../MvM-Game/pic/Hero/Ben/Ben-1.png");
-        images[1] = new ImageIcon("../MvM-Game/pic/Hero/Ben/Ben-2.png");
-        images[2] = new ImageIcon("../MvM-Game/pic/Hero/Ben/Ben-3.png");
-        images[3] = new ImageIcon("../MvM-Game/pic/Hero/Ben/Ben-4.png");
-
-        currentImageIndex = 0;
-        tableModel.setValueAt(scaleImage(images[currentImageIndex], width, height), row, col);
-
-        animationTimer = new Timer(50, e -> toggleImage());
-        animationTimer.start();
     }
 
 	private void toggleImage() {
 		currentImageIndex = (currentImageIndex + 1) % images.length;
 		int width = 80;
 		int height = 80;
-		tableModel.setValueAt(scaleImage(images[currentImageIndex], width, height), 1, 1);
+		gameMapPanel.getMainTableModel().setValueAt(scaleImage(images[currentImageIndex], width, height), 1, 1);
 	}
 }
 
