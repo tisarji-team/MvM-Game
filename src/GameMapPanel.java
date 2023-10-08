@@ -23,7 +23,10 @@ public class GameMapPanel extends JPanel {
     private DefaultTableModel mainTableModel;
     private DefaultTableModel characterTableModel;
     private ImageIcon[] images;
-	private Character character;
+	
+	private Character AdamCharacter;
+	private Character BenCharacter;
+	private Character CatCharacter;
 
 	private int tileSize;
 
@@ -76,8 +79,13 @@ public class GameMapPanel extends JPanel {
 		
 /* --------------------------- Set Image in Table --------------------------- */
 
-		character = new Character(this);
-		character.adam(characterTable,0, 0);
+		AdamCharacter = new Character(this);
+		BenCharacter = new Character(this);
+		CatCharacter = new Character(this);
+
+		AdamCharacter.adam(mainTable, 0, 4);
+		BenCharacter.ben(mainTable,0, 0);
+		CatCharacter.cat(mainTable, 0, 2);
 
 /* --------------------------- Set Add Table in panel --------------------------- */
 
@@ -105,11 +113,11 @@ public class GameMapPanel extends JPanel {
 	}
 
     public int getTileSize() {
-        return tileSize;
+        return (tileSize);
     }
 
     public GameTable getGameTable() {
-        return gameTable;
+        return (gameTable);
     }
 
     public void setGameTable(GameTable gameTable) {
@@ -117,19 +125,19 @@ public class GameMapPanel extends JPanel {
     }
 
     public JTable getMainTable() {
-        return mainTable;
+        return (mainTable);
     }
 
     public DefaultTableModel getMainTableModel() {
-        return mainTableModel;
+        return (mainTableModel);
     }
 
     public JTable getCharacterTable() {
-        return characterTable;
+        return (characterTable);
     }
 
     public DefaultTableModel getCharacterTableModel() {
-        return characterTableModel;
+        return (characterTableModel);
     }
 }
 
