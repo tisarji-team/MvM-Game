@@ -56,24 +56,34 @@ public class GameMapPanel extends JPanel {
 
 /* --------------------------- Character Table Model --------------------------- */
 		
-//		characterTableModel = new DefaultTableModel(1, 6);
-//        characterTable = new JTable(characterTableModel);
-//	
-//		for (int col = 0; col < columns; col++) {
-//			int newWidth = (int) (160 * 0.8);
-//			characterTable.getColumnModel().getColumn(col).setPreferredWidth(newWidth);
-//		}		
+		characterTableModel = new DefaultTableModel(1, 6);
+		characterTable = new JTable(characterTableModel);
+
+		characterTable.setBorder(new LineBorder(Color.WHITE));
+		characterTable.setShowGrid(true);
+		characterTable.setBackground(Color.BLACK);
+		characterTable.setGridColor(Color.WHITE);
+	
+		for (int col = 0; col < characterTableModel.getColumnCount(); col++) {
+			int newWidth = (int) (160 * 0.8);
+			characterTable.getColumnModel().getColumn(col).setPreferredWidth(newWidth);
+		}
+		
+		for (int row = 0; row < rows; row++) {
+			int newHeight = (int) (115 * 0.8);
+			characterTable.setRowHeight(row, newHeight);
+		}
 		
 /* --------------------------- Set Image in Table --------------------------- */
 
 		character = new Character(this);
-		character.adam(1, 1);
+		character.adam(characterTable,0, 0);
 
 /* --------------------------- Set Add Table in panel --------------------------- */
 
-        setBorder(BorderFactory.createEmptyBorder(90, 0, 0, 0));
+        setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		add(characterTable, BorderLayout.PAGE_START);
         add(mainTable, BorderLayout.CENTER);
-//		add(characterTable, BorderLayout.NORTH);
 
 /* -------------------------------------------------------------------------- */
 
