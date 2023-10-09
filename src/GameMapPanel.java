@@ -19,8 +19,10 @@ public class GameMapPanel extends JPanel {
 
     private GameTable gameTable;
     private JTable mainTable;
+	private JTable menuTable;
     private JTable characterTable;
     private DefaultTableModel mainTableModel;
+	private DefaultTableModel menuTableModel;
     private DefaultTableModel characterTableModel;
     private ImageIcon[] images;
 	
@@ -76,8 +78,28 @@ public class GameMapPanel extends JPanel {
 			int newHeight = (int) (115 * 0.8);
 			characterTable.setRowHeight(row, newHeight);
 		}
+
+/* --------------------------- Set Menu Bar --------------------------- */
+
+		menuTableModel = new DefaultTableModel(1, 1);
+		menuTable = new JTable(menuTableModel);
+
+		menuTable.setBorder(new LineBorder(Color.WHITE));
+		menuTable.setShowGrid(true);
+		menuTable.setBackground(Color.BLACK);
+		menuTable.setGridColor(Color.WHITE);
+	
+		for (int col = 0; col < menuTableModel.getColumnCount(); col++) {
+			int newWidth = (int) (160 * 0.8);
+			menuTable.getColumnModel().getColumn(col).setPreferredWidth(newWidth);
+		}
 		
-/* --------------------------- Set Image in Table --------------------------- */
+		for (int row = 0; row < rows; row++) {
+			int newHeight = (int) (115 * 0.8);
+			menuTable.setRowHeight(row, newHeight);
+		}
+
+/* --------------------------- Set Character --------------------------- */
 
 		AdamCharacter = new Character(this);
 		BenCharacter = new Character(this);
@@ -86,14 +108,19 @@ public class GameMapPanel extends JPanel {
 		AdamCharacter.adam(mainTable, 0, 4);
 		BenCharacter.ben(mainTable,0, 0);
 		CatCharacter.cat(mainTable, 0, 2);
+		
+		AdamCharacter.adam(characterTable, 0, 4);
+		BenCharacter.ben(mainTable, 1, 0);
+		CatCharacter.cat(mainTable, 1, 2);
 
 /* --------------------------- Set Add Table in panel --------------------------- */
 
         setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		add(menuTable, BorderLayout.WEST);
 		add(characterTable, BorderLayout.PAGE_START);
         add(mainTable, BorderLayout.CENTER);
 
-/* -------------------------------------------------------------------------- */
+/* --------------------------- Set Mouse in main Table --------------------------- */
 
         mainTable.addMouseListener(new MouseAdapter() {
             @Override

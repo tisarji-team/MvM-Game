@@ -36,34 +36,6 @@ public class GameTable {
 		}
 	}
 	
-	public char	getCellValue(int row, int col) 
-	{
-		if (row >= 0 && row < rows && col >= 0 && col < columns) {
-			return table[row][col];
-		}
-		return ' ';
-	}
-
-	public void setCellValue(int row, int col, char value)
-	{
-		if (row >= 0 && row < rows && col >= 0 && col < columns)
-		{
-			if (value == 'C' && characterCount[row] >= 4)
-			{
-				return ;
-			}
-
-			table[row][col] = value;
-			if (value == 'C')
-			{
-				characterCount[row]++;
-				JLabel characterLabel = new JLabel(characterIcon);
-				setCharacterLabel(row, col, characterLabel);
-			}
-		}
-	}
-
-	
 	public void setCharacterLabel(int row, int col, JLabel label) 
 	{
 		characterLabels[row][col] = label;

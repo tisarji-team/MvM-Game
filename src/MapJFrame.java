@@ -19,12 +19,12 @@ public MapJFrame() {
 	setTitle("Paper Game! - Map");
 	
 	rows = 6;
-	columns = 8;
+	columns = 9;
 	
 	mapPanel = new GameMapPanel(rows, columns);
 	MapjPanel.setLayout(new GridLayout(1, 1));
 	MapjPanel.add(mapPanel);
-	
+
 	System.out.println("Rows = " + rows);
 	System.out.println("Cols = " + columns);
 	

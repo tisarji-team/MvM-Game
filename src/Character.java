@@ -5,7 +5,6 @@
 
 import javax.swing.Timer;
 import java.awt.Image;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
