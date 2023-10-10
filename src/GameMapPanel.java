@@ -43,7 +43,7 @@ public class GameMapPanel extends JPanel {
 		 * MAIN TABLE FOR MAP *
 		 **********************/
 
-		loadImage("../MvM-Game/pic/Map/Map6x9_V.0.png");
+//		loadImage("../MvM-Game/pic/Map/Map6x9_V.1.png");
 		mainTableModel = new DefaultTableModel(rows, columns);
 		mainTable = new JTable(mainTableModel);
 		mainTable = new BackgroundImageTable(mainTableModel);
