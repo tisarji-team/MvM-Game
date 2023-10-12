@@ -3,11 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/Tisarji/Desktop/Project_Coded/MUT_coding/MvM-Game/src/GameMapPanel.java</file>
-            <file>file:/Users/Tisarji/Desktop/Project_Coded/MUT_coding/MvM-Game/src/GameTable.java</file>
-            <file>file:/Users/Tisarji/Desktop/Project_Coded/MUT_coding/MvM-Game/src/Character.java</file>
-            <file>file:/Users/Tisarji/Desktop/Project_Coded/MUT_coding/MvM-Game/src/MapJFrame.java</file>
-            <file>file:/Users/Tisarji/Desktop/Project_Coded/MUT_coding/MvM-Game/src/CharacterStat.java</file>
+            <file>file:/Users/Tisarji/NetBeansProjects/MvM-Game/src/CharacterClass.java</file>
+            <file>file:/Users/Tisarji/NetBeansProjects/MvM-Game/src/MapMainJFrame.java</file>
+            <file>file:/Users/Tisarji/NetBeansProjects/MvM-Game/src/TableClass.java</file>
         </group>
     </open-files>
 </project-private>
