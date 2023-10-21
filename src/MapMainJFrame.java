@@ -1,5 +1,11 @@
-
+import javax.swing.ImageIcon;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
+import javax.swing.JToggleButton;import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 
 /**
  *
@@ -11,6 +17,10 @@ public class MapMainJFrame extends javax.swing.JFrame {
 	/**
 	 * Creates new form MapMainJFrame
 	 */
+        private ButtonGroup buttonGroup;
+        private int selectedButtonIndex = -1;
+        private int point = 0;
+
 
 	public MapMainJFrame() {
 		initComponents();
@@ -18,13 +28,56 @@ public class MapMainJFrame extends javax.swing.JFrame {
 
 		TableClass tableClass = new TableClass(6, 9);
 		MapjPanel.setLayout(new BorderLayout());
-		CharacterjPanel.setLayout(new BorderLayout());
+		CharacterjPanel.setLayout(new FlowLayout());
 
 		// MapjPanel.setLayout(new GridLayout(1, 1));
 		MapjPanel.add(tableClass.createMapTable(6, 9), BorderLayout.CENTER);
 		// MapjPanel.add(tableClass.createMenuTable(1, 1), BorderLayout.WEST);
-		CharacterjPanel.add(tableClass.createCharacterTable(1, 5), BorderLayout.PAGE_START);
+                    buttonGroup = new ButtonGroup();
 
+                   String[] imagePaths = {
+                    "assets/picture/Hero/Point/Chicken Breast .png",   
+                    "assets/picture/Hero/Adam/Adam-1.png",
+                    "assets/picture/Hero/Ben/Ben-1.png",
+                    "assets/picture/Hero/Cat/Cat-1.png",
+                    "assets/picture/Hero/Chicken/Chicken_-1.png"
+                         };
+                   String[] buttonTexts = {
+            String.valueOf(point),
+            "40 Point",
+            "30 Point",
+            "70 Point",
+            "50 Point"
+        };
+
+                 for (int i = 0; i < imagePaths.length; i++) {
+            final int buttonIndex = i; // เก็บค่าดัชนีของปุมในลูป
+            ImageIcon icon = new ImageIcon(imagePaths[i]);
+
+            JToggleButton button = new JToggleButton(icon);
+            button.setPreferredSize(new Dimension(100, 100));
+            button.setText(buttonTexts[i]);
+            button.setVerticalTextPosition(JToggleButton.BOTTOM);
+            button.setHorizontalTextPosition(JToggleButton.CENTER);
+            button.setHorizontalAlignment(JToggleButton.CENTER);
+            CharacterjPanel.add(button);
+
+            buttonGroup.add(button);
+
+            button.addActionListener(e -> {
+                JToggleButton source = (JToggleButton) e.getSource();
+                if (source.isSelected()) {
+                    // ปุมถูกเลือก
+                    ButtonModel model = source.getModel();
+                    if (model.isSelected()) {
+                        selectedButtonIndex = buttonIndex; // กำหนดค่าตัวแปร selectedButtonIndex
+                    }
+                } else {
+                        source.setBorderPainted(false);
+                    }
+                
+            });
+        }
 		setSize(1280, 720);
 		setResizable(false);
 	}
