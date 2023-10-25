@@ -6,6 +6,7 @@ import javax.swing.JToggleButton;import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
+import javax.swing.JTable;
 
 /**
  *
@@ -18,7 +19,7 @@ public class MapMainJFrame extends javax.swing.JFrame {
 	 * Creates new form MapMainJFrame
 	 */
         private ButtonGroup buttonGroup;
-        private int selectedButtonIndex = -1;
+        private int selectedButtonIndex = -1; //for select which one to place
         private int point = 0;
 
 
@@ -26,15 +27,17 @@ public class MapMainJFrame extends javax.swing.JFrame {
 		initComponents();
 		setTitle("Paper Game! - Map");
 
-		TableClass tableClass = new TableClass(6, 9);
+                TableClass tableClass = new TableClass(6, 9);
+                JTable mapTable = tableClass.createMapTable(6, 9);
+                mapTable.setDefaultEditor(Object.class, null);
 		MapjPanel.setLayout(new BorderLayout());
 		CharacterjPanel.setLayout(new FlowLayout());
 
 		// MapjPanel.setLayout(new GridLayout(1, 1));
-		MapjPanel.add(tableClass.createMapTable(6, 9), BorderLayout.CENTER);
+		MapjPanel.add(mapTable, BorderLayout.CENTER);
 		// MapjPanel.add(tableClass.createMenuTable(1, 1), BorderLayout.WEST);
-                    buttonGroup = new ButtonGroup();
-
+                buttonGroup = new ButtonGroup();
+                // button character
                    String[] imagePaths = {
                     "assets/picture/Hero/Point/Chicken Breast .png",   
                     "assets/picture/Hero/Adam/Adam-1.png",
@@ -42,16 +45,17 @@ public class MapMainJFrame extends javax.swing.JFrame {
                     "assets/picture/Hero/Cat/Cat-1.png",
                     "assets/picture/Hero/Chicken/Chicken_-1.png"
                          };
+                   // image path 
                    String[] buttonTexts = {
             String.valueOf(point),
             "40 Point",
             "30 Point",
             "70 Point",
-            "50 Point"
+            "50 Point" // point for buy character
         };
 
                  for (int i = 0; i < imagePaths.length; i++) {
-            final int buttonIndex = i; // เก็บค่าดัชนีของปุมในลูป
+            final int buttonIndex = i; // seperate button 
             ImageIcon icon = new ImageIcon(imagePaths[i]);
 
             JToggleButton button = new JToggleButton(icon);
@@ -60,6 +64,7 @@ public class MapMainJFrame extends javax.swing.JFrame {
             button.setVerticalTextPosition(JToggleButton.BOTTOM);
             button.setHorizontalTextPosition(JToggleButton.CENTER);
             button.setHorizontalAlignment(JToggleButton.CENTER);
+            // place string mid below button
             CharacterjPanel.add(button);
 
             buttonGroup.add(button);
@@ -67,10 +72,10 @@ public class MapMainJFrame extends javax.swing.JFrame {
             button.addActionListener(e -> {
                 JToggleButton source = (JToggleButton) e.getSource();
                 if (source.isSelected()) {
-                    // ปุมถูกเลือก
+                    // when selected button
                     ButtonModel model = source.getModel();
                     if (model.isSelected()) {
-                        selectedButtonIndex = buttonIndex; // กำหนดค่าตัวแปร selectedButtonIndex
+                        selectedButtonIndex = buttonIndex; // return selectedButtonIndex
                     }
                 } else {
                         source.setBorderPainted(false);
