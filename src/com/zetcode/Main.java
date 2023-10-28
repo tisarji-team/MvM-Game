@@ -14,6 +14,7 @@ public class Main extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(950, 550);
 		setLocationRelativeTo(null);
+		setResizable(false);
 	}
 
 	public static void main(String[] args) {

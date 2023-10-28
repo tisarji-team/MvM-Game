@@ -1,6 +1,7 @@
 package com.zetcode;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Event;
@@ -20,7 +21,9 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -31,10 +34,12 @@ public class Board extends JPanel implements ActionListener {
 	private Image ii;
 	private final Color dotColor = new Color(192, 192, 0);
 	private Color mazeColor;
+	private JDialog creditDialog;
+	// private Sound moveSound = new Sound("src/resources/sound/thief_eat.wav");
 
 	private boolean inGame = false;
 	private boolean dying = false;
-	private boolean showCredits = false;
+	private boolean isCreditDialogOpen = false;
 
 	private final int BLOCK_SIZE = 24;
 	private final int N_BLOCKS = 20;
@@ -42,7 +47,7 @@ public class Board extends JPanel implements ActionListener {
 	private final int THIEF_ANIM_DELAY = 4;
 	private final int THIEF_ANIM_COUNT = 4;
 	private final int MAX_GHOSTS = 12;
-	private final int THIEF_SPEED = 6;
+	private final int THIEF_SPEED = 4;
 
 	private int thiefAnimCount = THIEF_ANIM_DELAY;
 	private int thiefAnimDir = 1;
@@ -56,6 +61,7 @@ public class Board extends JPanel implements ActionListener {
 	private Image thief1, thief2up, thief2left, thief2right, thief2down;
 	private Image thief3up, thief3down, thief3left, thief3right;
 	private Image thief4up, thief4down, thief4left, thief4right;
+	private Image thief1up, thief1down, thief1left, thief1right;
 
 	private int thief_x, thief_y, thiefd_x, thiefd_y;
 	private int req_dx, req_dy, view_dx, view_dy;
@@ -125,6 +131,7 @@ public class Board extends JPanel implements ActionListener {
 		loadImages();
 		initVariables();
 		initFont();
+		initCreditDialog();
 		initBoard();
 	}
 
@@ -180,7 +187,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void showIntroScreen(Graphics2D g2d) {
-		g2d.setColor(new Color(0, 32, 48));
+		g2d.setColor(new Color(100, 130, 255));
 		g2d.fillRect(50, SCREEN_SIZE / 2 - 30, SCREEN_SIZE - 100, 50);
 		g2d.setColor(Color.white);
 		g2d.drawRect(50, SCREEN_SIZE / 2 - 30, SCREEN_SIZE - 100, 50);
@@ -337,6 +344,7 @@ public class Board extends JPanel implements ActionListener {
 			if ((ch & 16) != 0) {
 				screenData[pos] = (short) (ch & 15);
 				score++;
+				// moveSound.play();
 			}
 
 			if (req_dx != 0 || req_dy != 0) {
@@ -388,7 +396,7 @@ public class Board extends JPanel implements ActionListener {
 				g2d.drawImage(thief4up, thief_x + 1, thief_y + 1, this);
 				break;
 			default:
-				g2d.drawImage(thief1, thief_x + 1, thief_y + 1, this);
+				g2d.drawImage(thief1up, thief_x + 1, thief_y + 1, this);
 				break;
 		}
 	}
@@ -405,7 +413,7 @@ public class Board extends JPanel implements ActionListener {
 				g2d.drawImage(thief4down, thief_x + 1, thief_y + 1, this);
 				break;
 			default:
-				g2d.drawImage(thief1, thief_x + 1, thief_y + 1, this);
+				g2d.drawImage(thief1down, thief_x + 1, thief_y + 1, this);
 				break;
 		}
 	}
@@ -422,7 +430,7 @@ public class Board extends JPanel implements ActionListener {
 				g2d.drawImage(thief4left, thief_x + 1, thief_y + 1, this);
 				break;
 			default:
-				g2d.drawImage(thief1, thief_x + 1, thief_y + 1, this);
+				g2d.drawImage(thief1left, thief_x + 1, thief_y + 1, this);
 				break;
 		}
 	}
@@ -439,7 +447,7 @@ public class Board extends JPanel implements ActionListener {
 				g2d.drawImage(thief4right, thief_x + 1, thief_y + 1, this);
 				break;
 			default:
-				g2d.drawImage(thief1, thief_x + 1, thief_y + 1, this);
+				g2d.drawImage(thief1right, thief_x + 1, thief_y + 1, this);
 				break;
 		}
 	}
@@ -530,15 +538,19 @@ public class Board extends JPanel implements ActionListener {
 	private void loadImages() {
 		ghost = new ImageIcon("src/resources/images/Ghost/Ghost.gif").getImage();
 		thief1 = new ImageIcon("src/resources/images/Thief/Down/ThiefDown1.png").getImage();
+		thief1up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp1.png").getImage();
 		thief2up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp2.png").getImage();
 		thief3up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp3.png").getImage();
 		thief4up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp4.png").getImage();
+		thief1down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown1.png").getImage();
 		thief2down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown2.png").getImage();
 		thief3down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown3.png").getImage();
 		thief4down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown4.png").getImage();
+		thief1left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft1.png").getImage();
 		thief2left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft2.png").getImage();
 		thief3left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft3.png").getImage();
 		thief4left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft4.png").getImage();
+		thief1right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight1.png").getImage();
 		thief2right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight2.png").getImage();
 		thief3right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight3.png").getImage();
 		thief4right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight4.png").getImage();
@@ -549,6 +561,31 @@ public class Board extends JPanel implements ActionListener {
 		super.paintComponent(g);
 
 		doDrawing(g);
+	}
+
+	private void initCreditDialog() {
+		creditDialog = new JDialog();
+		creditDialog.setTitle("Credits");
+		creditDialog.setSize(890, 465);
+		creditDialog.setLocationRelativeTo(null);
+
+		JLabel creditLabel = new JLabel();
+		ImageIcon creditImage = new ImageIcon("src/resources/images/Credit/Credit1.png");
+		creditLabel.setIcon(creditImage);
+
+		JButton closeButton = new JButton("Close");
+		closeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				toggleCreditDialogVisibility();
+			}
+		});
+
+		JPanel creditPanel = new JPanel(new BorderLayout());
+		creditPanel.add(creditLabel, BorderLayout.CENTER);
+		creditPanel.add(closeButton, BorderLayout.SOUTH);
+
+		creditDialog.add(creditPanel);
 	}
 
 	private void doDrawing(Graphics g) {
@@ -585,17 +622,23 @@ public class Board extends JPanel implements ActionListener {
 		String lineCutter = "--------------------------------------";
 		g2d.drawString(lineCutter, SCREEN_SIZE + 20, 140);
 
+		String pauseString = "Press 'P' to Pause and Resume";
+		g2d.drawString(pauseString, SCREEN_SIZE + 20, 220);
+
 		String creditString = "Press 'C' to Show Credit";
 		g2d.drawString(creditString, SCREEN_SIZE + 20, 180);
+		String warningCredit = "Don't Press this If you are not a Developer";
+		g2d.setColor(Color.RED);
+		g2d.drawString(warningCredit, SCREEN_SIZE + 20, 200);
 
-		if (showCredits) {
-			ImageIcon creditImage = new ImageIcon("src/resources/images/Credit/Credit1.png");
-			g2d.drawImage(creditImage.getImage(), SCREEN_SIZE + 20, 200, this);
-		}
-		// ? -----------------------------------------------------
 		g2d.drawImage(ii, 5, 5, this);
 		Toolkit.getDefaultToolkit().sync();
 		g2d.dispose();
+	}
+
+	private void toggleCreditDialogVisibility() {
+		isCreditDialogOpen = !isCreditDialogOpen;
+		creditDialog.setVisible(isCreditDialogOpen);
 	}
 
 	class TAdapter extends KeyAdapter {
@@ -603,6 +646,9 @@ public class Board extends JPanel implements ActionListener {
 		public void keyPressed(KeyEvent e) {
 			int key = e.getKeyCode();
 			if (inGame) {
+				if (key == 'C' || key == 'c') {
+					toggleCreditDialogVisibility();
+				}
 				if (key == KeyEvent.VK_LEFT) {
 					req_dx = -1;
 					req_dy = 0;
@@ -615,11 +661,9 @@ public class Board extends JPanel implements ActionListener {
 				} else if (key == KeyEvent.VK_DOWN) {
 					req_dx = 0;
 					req_dy = 1;
-				} else if (key == 'C' || key == 'c') {
-					showCredits = !showCredits;
 				} else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
 					inGame = false;
-				} else if (key == KeyEvent.VK_PAUSE) {
+				} else if (key == 'p' || key == 'P') {
 					if (timer.isRunning()) {
 						timer.stop();
 					} else {
