@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -33,21 +34,21 @@ public class Board extends JPanel implements ActionListener {
 
 	private boolean inGame = false;
 	private boolean dying = false;
-	private boolean paused = false;
+	private boolean showCredits = false;
 
 	private final int BLOCK_SIZE = 24;
 	private final int N_BLOCKS = 20;
 	private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
-	private final int PAC_ANIM_DELAY = 2;
-	private final int thief_ANIM_COUNT = 4;
+	private final int THIEF_ANIM_DELAY = 4;
+	private final int THIEF_ANIM_COUNT = 4;
 	private final int MAX_GHOSTS = 12;
-	private final int thief_SPEED = 6;
+	private final int THIEF_SPEED = 6;
 
-	private int pacAnimCount = PAC_ANIM_DELAY;
-	private int pacAnimDir = 1;
+	private int thiefAnimCount = THIEF_ANIM_DELAY;
+	private int thiefAnimDir = 1;
 	private int thiefAnimPos = 0;
 	private int N_GHOSTS = 6;
-	private int pacsLeft, score;
+	private int thiefLeft, score;
 	private int[] dx, dy;
 	private int[] ghost_x, ghost_y, ghost_dx, ghost_dy, ghostSpeed;
 
@@ -59,48 +60,48 @@ public class Board extends JPanel implements ActionListener {
 	private int thief_x, thief_y, thiefd_x, thiefd_y;
 	private int req_dx, req_dy, view_dx, view_dy;
 
-	private final short levelData[] =  {
-		// ! 0
-			19,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,
-		// ! 1
-			17,16,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 2
-			17,28,0 ,25,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 3
-			21,0 ,0 ,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 4
-			17,22,0 ,19,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 5
-			17,16,18,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 6
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 7
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 8
-			17,16,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 9
-			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 10
-			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 11
-			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 12
-			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-		// ! 13
-			17,20,0 ,25,24,16,16,16,24,24,24,24,16,16,16,16,16,16,16,16,
-		// ! 14
-			17,20,0 ,0 ,0 ,17,16,20,0 ,0 ,0 ,0 ,17,16,16,16,16,16,16,16,
-		// ! 15
-			17,16,26,26,26,16,24,24,26,18,18,18,16,16,16,16,16,16,16,16,
-		// ! 16
-			17,20,0 ,0 ,0 ,21,0 ,0 ,0 ,17,0 ,16,16,16,16,16,16,16,16,16,
-		// ! 17
-			17,16,18,18,18,16,18,22,0 ,17,16,16,16,16,16,16,16,16,16,16,
-		// ! 18
-			17,16,16,16,16,16,16,20,0 ,17,16,16,16,16,16,16,16,16,16,16,
-		// ! 19
-			25,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8
-		};
+	private final short levelData[] = {
+			// ! 1
+			19, 18, 26, 18, 18, 18, 18, 18, 18, 22, 0, 19, 18, 18, 26, 26, 18, 26, 26, 22,
+			// ! 2
+			17, 28, 0, 25, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20, 0, 0, 21, 0, 0, 21,
+			// ! 3
+			21, 0, 0, 0, 17, 24, 24, 16, 16, 20, 0, 17, 16, 20, 0, 0, 21, 0, 0, 21,
+			// ! 4
+			17, 22, 0, 19, 20, 0, 0, 17, 16, 20, 0, 17, 16, 16, 26, 26, 16, 26, 26, 20,
+			// ! 5
+			17, 16, 26, 16, 16, 18, 18, 16, 16, 16, 18, 16, 16, 20, 0, 0, 21, 0, 0, 21,
+			// ! 6
+			17, 20, 0, 17, 16, 16, 16, 16, 16, 24, 24, 24, 16, 20, 0, 0, 21, 0, 0, 21,
+			// ! 7
+			17, 20, 0, 17, 16, 16, 16, 16, 20, 0, 0, 0, 17, 20, 0, 0, 21, 0, 0, 21,
+			// ! 8
+			17, 20, 0, 17, 16, 16, 16, 16, 16, 22, 0, 19, 16, 16, 18, 18, 16, 18, 18, 20,
+			// ! 9
+			17, 20, 0, 17, 16, 16, 16, 16, 16, 16, 18, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+			// ! 10
+			17, 20, 0, 25, 24, 16, 16, 16, 24, 24, 24, 24, 16, 16, 16, 24, 24, 24, 24, 28,
+			// ! 11
+			17, 20, 0, 0, 0, 17, 16, 20, 0, 0, 0, 0, 17, 16, 20, 0, 0, 0, 0, 4,
+			// ! 12
+			17, 16, 26, 26, 26, 16, 24, 24, 26, 18, 18, 18, 16, 16, 16, 26, 18, 18, 18, 22,
+			// ! 13
+			17, 20, 0, 0, 0, 21, 0, 0, 0, 17, 16, 16, 16, 16, 20, 0, 17, 24, 24, 20,
+			// ! 14
+			17, 20, 0, 19, 18, 16, 18, 22, 0, 17, 16, 16, 24, 16, 20, 0, 21, 0, 0, 21,
+			// ! 15
+			17, 20, 0, 17, 16, 16, 16, 20, 0, 17, 16, 28, 0, 25, 20, 0, 17, 26, 26, 20,
+			// ! 16
+			17, 20, 0, 17, 16, 16, 16, 20, 0, 17, 20, 0, 0, 0, 21, 0, 21, 0, 0, 21,
+			// ! 17
+			17, 16, 26, 16, 16, 16, 16, 16, 26, 16, 16, 18, 18, 18, 16, 26, 16, 18, 18, 20,
+			// ! 18
+			17, 20, 0, 25, 24, 16, 24, 28, 0, 17, 16, 16, 16, 16, 20, 0, 17, 16, 16, 20,
+			// ! 19
+			17, 20, 0, 0, 0, 21, 0, 0, 0, 17, 16, 16, 16, 16, 20, 0, 17, 16, 16, 20,
+			// ! 20
+			25, 24, 26, 26, 26, 24, 26, 26, 26, 24, 24, 24, 24, 24, 24, 26, 24, 24, 24, 28
+	};
 
 	private final int validSpeeds[] = { 1, 2, 3, 4, 6, 8 };
 	private final int maxSpeed = 6;
@@ -111,9 +112,8 @@ public class Board extends JPanel implements ActionListener {
 
 	private void initFont() {
 		try {
-			// Load the custom font
-			smallFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/resources/font/PixeloidMono.ttf")).deriveFont(12f);
-			// Register the font with the GraphicsEnvironment
+			smallFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/resources/font/PixeloidMono.ttf"))
+					.deriveFont(12f);
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			ge.registerFont(smallFont);
 		} catch (IOException | FontFormatException e) {
@@ -157,13 +157,13 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void doAnim() {
-		pacAnimCount--;
-		if (pacAnimCount <= 0) {
-			pacAnimCount = PAC_ANIM_DELAY;
-			thiefAnimPos = thiefAnimPos + pacAnimDir;
+		thiefAnimCount--;
+		if (thiefAnimCount <= 0) {
+			thiefAnimCount = THIEF_ANIM_DELAY;
+			thiefAnimPos = thiefAnimPos + thiefAnimDir;
 
-			if (thiefAnimPos == (thief_ANIM_COUNT - 1) || thiefAnimPos == 0) {
-				pacAnimDir = -pacAnimDir;
+			if (thiefAnimPos == (THIEF_ANIM_COUNT - 1) || thiefAnimPos == 0) {
+				thiefAnimDir = -thiefAnimDir;
 			}
 		}
 	}
@@ -187,7 +187,8 @@ public class Board extends JPanel implements ActionListener {
 
 		String s = "Press 'S' to start";
 		try {
-			Font smallFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/resources/font/PixeloidMono.ttf")).deriveFont(14f);
+			Font smallFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/resources/font/PixeloidMono.ttf"))
+					.deriveFont(14f);
 			g2d.setColor(Color.white);
 			g2d.setFont(smallFont);
 		} catch (IOException | FontFormatException e) {
@@ -207,7 +208,7 @@ public class Board extends JPanel implements ActionListener {
 		s = "Score: " + score;
 		g.drawString(s, SCREEN_SIZE / 2 + 96, SCREEN_SIZE + 16);
 
-		for (i = 0; i < pacsLeft; i++) {
+		for (i = 0; i < thiefLeft; i++) {
 			g.drawImage(thief3left, i * 28 + 8, SCREEN_SIZE + 1, this);
 		}
 	}
@@ -236,8 +237,8 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void death() {
-		pacsLeft--;
-		if (pacsLeft == 0) {
+		thiefLeft--;
+		if (thiefLeft == 0) {
 			inGame = false;
 		}
 		continueLevel();
@@ -359,8 +360,8 @@ public class Board extends JPanel implements ActionListener {
 				thiefd_y = 0;
 			}
 		}
-		thief_x = thief_x + thief_SPEED * thiefd_x;
-		thief_y = thief_y + thief_SPEED * thiefd_y;
+		thief_x = thief_x + THIEF_SPEED * thiefd_x;
+		thief_y = thief_y + THIEF_SPEED * thiefd_y;
 	}
 
 	private void drawThief(Graphics2D g2d) {
@@ -480,7 +481,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void initGame() {
-		pacsLeft = 3;
+		thiefLeft = 3;
 		score = 0;
 		initLevel();
 		N_GHOSTS = 6;
@@ -502,8 +503,8 @@ public class Board extends JPanel implements ActionListener {
 		int random;
 
 		for (i = 0; i < N_GHOSTS; i++) {
-			ghost_y[i] = 4 * BLOCK_SIZE;
-			ghost_x[i] = 4 * BLOCK_SIZE;
+			ghost_y[i] = 10 * BLOCK_SIZE;
+			ghost_x[i] = 10 * BLOCK_SIZE;
 			ghost_dy[i] = 0;
 			ghost_dx[i] = dx;
 			dx = -dx;
@@ -527,20 +528,20 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void loadImages() {
-		ghost = new ImageIcon("src/resources/images/64MedusaHead.gif").getImage();
-		thief1 = new ImageIcon("src/resources/images/Thief/Up/ThiefUp1.png").getImage();
+		ghost = new ImageIcon("src/resources/images/Ghost/Ghost.gif").getImage();
+		thief1 = new ImageIcon("src/resources/images/Thief/Down/ThiefDown1.png").getImage();
 		thief2up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp2.png").getImage();
 		thief3up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp3.png").getImage();
 		thief4up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp4.png").getImage();
-		thief2down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown1.png").getImage();
-		thief3down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown2.png").getImage();
-		thief4down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown3.png").getImage();
-		thief2left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft1.png").getImage();
-		thief3left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft2.png").getImage();
-		thief4left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft3.png").getImage();
-		thief2right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight1.png").getImage();
-		thief3right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight2.png").getImage();
-		thief4right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight3.png").getImage();
+		thief2down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown2.png").getImage();
+		thief3down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown3.png").getImage();
+		thief4down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown4.png").getImage();
+		thief2left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft2.png").getImage();
+		thief3left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft3.png").getImage();
+		thief4left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft4.png").getImage();
+		thief2right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight2.png").getImage();
+		thief3right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight3.png").getImage();
+		thief4right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight4.png").getImage();
 	}
 
 	@Override
@@ -570,10 +571,27 @@ public class Board extends JPanel implements ActionListener {
 		g2d.setColor(Color.white);
 		g2d.setFont(smallFont);
 		String howToPlayText = "! How to Play !";
-		g2d.drawString(howToPlayText, SCREEN_SIZE + 20, 40);
+		g2d.drawString(howToPlayText, SCREEN_SIZE + 55, 40);
 
-		String instructions = "Use arrow keys to move";
-		g2d.drawString(instructions, SCREEN_SIZE + 20, 90);
+		String upArrow = "Press Up arrow keys to up";
+		g2d.drawString(upArrow, SCREEN_SIZE + 20, 60);
+		String downArrow = "Press Down arrow keys to down";
+		g2d.drawString(downArrow, SCREEN_SIZE + 20, 80);
+		String leftArrow = "Press Left arrow keys to left";
+		g2d.drawString(leftArrow, SCREEN_SIZE + 20, 100);
+		String rightArrow = "Press Right arrow keys to right";
+		g2d.drawString(rightArrow, SCREEN_SIZE + 20, 120);
+
+		String lineCutter = "--------------------------------------";
+		g2d.drawString(lineCutter, SCREEN_SIZE + 20, 140);
+
+		String creditString = "Press 'C' to Show Credit";
+		g2d.drawString(creditString, SCREEN_SIZE + 20, 180);
+
+		if (showCredits) {
+			ImageIcon creditImage = new ImageIcon("src/resources/images/Credit/Credit1.png");
+			g2d.drawImage(creditImage.getImage(), SCREEN_SIZE + 20, 200, this);
+		}
 		// ? -----------------------------------------------------
 		g2d.drawImage(ii, 5, 5, this);
 		Toolkit.getDefaultToolkit().sync();
@@ -597,6 +615,8 @@ public class Board extends JPanel implements ActionListener {
 				} else if (key == KeyEvent.VK_DOWN) {
 					req_dx = 0;
 					req_dy = 1;
+				} else if (key == 'C' || key == 'c') {
+					showCredits = !showCredits;
 				} else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
 					inGame = false;
 				} else if (key == KeyEvent.VK_PAUSE) {
