@@ -5,7 +5,6 @@ import javax.swing.JFrame;
 
 public class Main extends JFrame {
 	public Main() {
-
 		initUI();
 	}
 	private void initUI() {
@@ -13,7 +12,7 @@ public class Main extends JFrame {
 
 		setTitle("The Thief Escape");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(380, 420);
+		setSize(1280, 720);
 		setLocationRelativeTo(null);
 	}
 
