@@ -5,15 +5,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -22,17 +26,17 @@ import javax.swing.Timer;
 public class Board extends JPanel implements ActionListener {
 
 	private Dimension d;
-	private final Font smallFont = new Font("Helvetica", Font.BOLD, 14);
-
+	private Font smallFont; // = new Font("src/resources/font/PixeloidMono.ttf", Font.BOLD, 14);
 	private Image ii;
 	private final Color dotColor = new Color(192, 192, 0);
 	private Color mazeColor;
 
 	private boolean inGame = false;
 	private boolean dying = false;
+	private boolean paused = false;
 
 	private final int BLOCK_SIZE = 24;
-	private final int N_BLOCKS = 30;
+	private final int N_BLOCKS = 20;
 	private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
 	private final int PAC_ANIM_DELAY = 2;
 	private final int thief_ANIM_COUNT = 4;
@@ -55,74 +59,48 @@ public class Board extends JPanel implements ActionListener {
 	private int thief_x, thief_y, thiefd_x, thiefd_y;
 	private int req_dx, req_dy, view_dx, view_dy;
 
-	private String howToPlayText = "How to Play:\n\n" +
-			"Use the arrow keys to move Pac-Man.\n" +
-			"Eat all the dots to advance to the next level.\n" +
-			"Avoid the ghosts.\n" +
-			"Press 'S' to start the game.";
-
-	private final short levelData[] = {
+	private final short levelData[] =  {
 		// ! 0
-			19,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,22,
+			19,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,
 		// ! 1
-			17,16,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,16,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 2
-			17,28,0 ,25,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,28,0 ,25,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 3
-			21,0 ,0 ,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			21,0 ,0 ,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 4
-			17,22,0 ,19,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,22,0 ,19,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 5
-			17,16,18,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,16,18,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 6
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 7
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 8
-			17,16,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,16,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 9
-			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 10
-			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 11
-			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 12
-			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
 		// ! 13
-			17,20,0 ,25,24,16,16,16,24,24,24,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,20,0 ,25,24,16,16,16,24,24,24,24,16,16,16,16,16,16,16,16,
 		// ! 14
-			17,20,0 ,0 ,0 ,17,16,20,0 ,0 ,0 ,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,20,0 ,0 ,0 ,17,16,20,0 ,0 ,0 ,0 ,17,16,16,16,16,16,16,16,
 		// ! 15
-			17,16,26,26,26,16,24,24,26,18,18,18,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,16,26,26,26,16,24,24,26,18,18,18,16,16,16,16,16,16,16,16,
 		// ! 16
-			17,20,0 ,0 ,0 ,21,0 ,0 ,0 ,17,0 ,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,20,0 ,0 ,0 ,21,0 ,0 ,0 ,17,0 ,16,16,16,16,16,16,16,16,16,
 		// ! 17
-			17,16,18,18,18,16,18,22,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,16,18,18,18,16,18,22,0 ,17,16,16,16,16,16,16,16,16,16,16,
 		// ! 18
-			17,16,16,16,16,16,16,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+			17,16,16,16,16,16,16,20,0 ,17,16,16,16,16,16,16,16,16,16,16,
 		// ! 19
-			17,16,16,16,16,16,16,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 20
-			17,16,16,16,16,16,16,16,18,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 21
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 22
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 23
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 24
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 25
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 26
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 27
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 28
-			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		// ! 29
-			25,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,28
-	};
+			25,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8
+		};
 
 	private final int validSpeeds[] = { 1, 2, 3, 4, 6, 8 };
 	private final int maxSpeed = 6;
@@ -131,10 +109,22 @@ public class Board extends JPanel implements ActionListener {
 	private short[] screenData;
 	private Timer timer;
 
-	public Board() {
+	private void initFont() {
+		try {
+			// Load the custom font
+			smallFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/resources/font/PixeloidMono.ttf")).deriveFont(12f);
+			// Register the font with the GraphicsEnvironment
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(smallFont);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+	}
 
+	public Board() {
 		loadImages();
 		initVariables();
+		initFont();
 		initBoard();
 	}
 
@@ -195,12 +185,16 @@ public class Board extends JPanel implements ActionListener {
 		g2d.setColor(Color.white);
 		g2d.drawRect(50, SCREEN_SIZE / 2 - 30, SCREEN_SIZE - 100, 50);
 
-		String s = "Press s to start.";
-		Font small = new Font("Helvetica", Font.BOLD, 14);
-		FontMetrics metr = this.getFontMetrics(small);
+		String s = "Press 'S' to start";
+		try {
+			Font smallFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/resources/font/PixeloidMono.ttf")).deriveFont(14f);
+			g2d.setColor(Color.white);
+			g2d.setFont(smallFont);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
 
-		g2d.setColor(Color.white);
-		g2d.setFont(small);
+		FontMetrics metr = g2d.getFontMetrics();
 		g2d.drawString(s, (SCREEN_SIZE - metr.stringWidth(s)) / 2, SCREEN_SIZE / 2);
 	}
 
@@ -489,7 +483,7 @@ public class Board extends JPanel implements ActionListener {
 		pacsLeft = 3;
 		score = 0;
 		initLevel();
-		N_GHOSTS = 0;
+		N_GHOSTS = 6;
 		currentSpeed = 3;
 	}
 
@@ -533,7 +527,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void loadImages() {
-		ghost = new ImageIcon("src/resources/images/Cat.gif").getImage();
+		ghost = new ImageIcon("src/resources/images/64MedusaHead.gif").getImage();
 		thief1 = new ImageIcon("src/resources/images/Thief/Up/ThiefUp1.png").getImage();
 		thief2up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp2.png").getImage();
 		thief3up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp3.png").getImage();
@@ -572,10 +566,15 @@ public class Board extends JPanel implements ActionListener {
 			showIntroScreen(g2d);
 		}
 
+		// ? How to Play
 		g2d.setColor(Color.white);
 		g2d.setFont(smallFont);
-		g2d.drawString(howToPlayText, SCREEN_SIZE + 10, 30);
+		String howToPlayText = "! How to Play !";
+		g2d.drawString(howToPlayText, SCREEN_SIZE + 20, 40);
 
+		String instructions = "Use arrow keys to move";
+		g2d.drawString(instructions, SCREEN_SIZE + 20, 90);
+		// ? -----------------------------------------------------
 		g2d.drawImage(ii, 5, 5, this);
 		Toolkit.getDefaultToolkit().sync();
 		g2d.dispose();
