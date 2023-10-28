@@ -12,7 +12,7 @@ public class Main extends JFrame {
 
 		setTitle("The Thief Escape");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(1280, 720);
+		setSize(1150, 780);
 		setLocationRelativeTo(null);
 	}
 

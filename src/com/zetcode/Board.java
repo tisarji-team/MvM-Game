@@ -35,61 +35,93 @@ public class Board extends JPanel implements ActionListener {
 	private final int N_BLOCKS = 30;
 	private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
 	private final int PAC_ANIM_DELAY = 2;
-	private final int PACMAN_ANIM_COUNT = 4;
+	private final int thief_ANIM_COUNT = 4;
 	private final int MAX_GHOSTS = 12;
-	private final int PACMAN_SPEED = 6;
+	private final int thief_SPEED = 6;
 
 	private int pacAnimCount = PAC_ANIM_DELAY;
 	private int pacAnimDir = 1;
-	private int pacmanAnimPos = 0;
+	private int thiefAnimPos = 0;
 	private int N_GHOSTS = 6;
 	private int pacsLeft, score;
 	private int[] dx, dy;
 	private int[] ghost_x, ghost_y, ghost_dx, ghost_dy, ghostSpeed;
 
 	private Image ghost;
-	private Image pacman1, pacman2up, pacman2left, pacman2right, pacman2down;
-	private Image pacman3up, pacman3down, pacman3left, pacman3right;
-	private Image pacman4up, pacman4down, pacman4left, pacman4right;
+	private Image thief1, thief2up, thief2left, thief2right, thief2down;
+	private Image thief3up, thief3down, thief3left, thief3right;
+	private Image thief4up, thief4down, thief4left, thief4right;
 
-	private int pacman_x, pacman_y, pacmand_x, pacmand_y;
+	private int thief_x, thief_y, thiefd_x, thiefd_y;
 	private int req_dx, req_dy, view_dx, view_dy;
 
-	// Summary : 0 = empty | 1 = Left | 2 = Top | 4 = Right | 8 = Bottom | 16 = dot
-	// Summary : 12 Triangle Bottom Right | 19 Triangle Top Left
-	// Summary : 21 Triangle Top Right | 22 Triangle Bottom Left 
+	private String howToPlayText = "How to Play:\n\n" +
+			"Use the arrow keys to move Pac-Man.\n" +
+			"Eat all the dots to advance to the next level.\n" +
+			"Avoid the ghosts.\n" +
+			"Press 'S' to start the game.";
 
 	private final short levelData[] = {
-		19,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,22,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
-		25,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,28	
+		// ! 0
+			19,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,22,
+		// ! 1
+			17,16,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 2
+			17,28,0 ,25,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 3
+			21,0 ,0 ,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 4
+			17,22,0 ,19,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 5
+			17,16,18,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 6
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 7
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 8
+			17,16,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 9
+			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 10
+			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 11
+			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 12
+			17,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 13
+			17,20,0 ,25,24,16,16,16,24,24,24,24,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 14
+			17,20,0 ,0 ,0 ,17,16,20,0 ,0 ,0 ,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 15
+			17,16,26,26,26,16,24,24,26,18,18,18,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 16
+			17,20,0 ,0 ,0 ,21,0 ,0 ,0 ,17,0 ,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 17
+			17,16,18,18,18,16,18,22,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 18
+			17,16,16,16,16,16,16,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 19
+			17,16,16,16,16,16,16,20,0 ,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 20
+			17,16,16,16,16,16,16,16,18,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 21
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 22
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 23
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 24
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 25
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 26
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 27
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 28
+			17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,20,
+		// ! 29
+			25,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,8 ,28
 	};
 
 	private final int validSpeeds[] = { 1, 2, 3, 4, 6, 8 };
@@ -100,24 +132,10 @@ public class Board extends JPanel implements ActionListener {
 	private Timer timer;
 
 	public Board() {
+
 		loadImages();
 		initVariables();
 		initBoard();
-
-		int boardWidth = N_BLOCKS * BLOCK_SIZE;
-		int boardHeight = N_BLOCKS * BLOCK_SIZE;
-
-		if (boardWidth > 1280) {
-			boardWidth = 1280;
-			boardHeight = (boardHeight * 1280) / (N_BLOCKS * BLOCK_SIZE);
-		}
-
-		if (boardHeight > 720) {
-			boardHeight = 720;
-			boardWidth = (boardWidth * 720) / (N_BLOCKS * BLOCK_SIZE);
-		}
-
-		setPreferredSize(new Dimension(boardWidth, boardHeight));
 	}
 
 	private void initBoard() {
@@ -152,9 +170,9 @@ public class Board extends JPanel implements ActionListener {
 		pacAnimCount--;
 		if (pacAnimCount <= 0) {
 			pacAnimCount = PAC_ANIM_DELAY;
-			pacmanAnimPos = pacmanAnimPos + pacAnimDir;
+			thiefAnimPos = thiefAnimPos + pacAnimDir;
 
-			if (pacmanAnimPos == (PACMAN_ANIM_COUNT - 1) || pacmanAnimPos == 0) {
+			if (thiefAnimPos == (thief_ANIM_COUNT - 1) || thiefAnimPos == 0) {
 				pacAnimDir = -pacAnimDir;
 			}
 		}
@@ -164,8 +182,8 @@ public class Board extends JPanel implements ActionListener {
 		if (dying) {
 			death();
 		} else {
-			movePacman();
-			drawPacman(g2d);
+			moveThief();
+			drawThief(g2d);
 			moveGhosts(g2d);
 			checkMaze();
 		}
@@ -192,11 +210,11 @@ public class Board extends JPanel implements ActionListener {
 
 		g.setFont(smallFont);
 		g.setColor(new Color(96, 128, 255));
-		s = "Score : " + score;
+		s = "Score: " + score;
 		g.drawString(s, SCREEN_SIZE / 2 + 96, SCREEN_SIZE + 16);
 
 		for (i = 0; i < pacsLeft; i++) {
-			g.drawImage(pacman3left, i * 28 + 8, SCREEN_SIZE + 1, this);
+			g.drawImage(thief3left, i * 28 + 8, SCREEN_SIZE + 1, this);
 		}
 	}
 
@@ -293,8 +311,8 @@ public class Board extends JPanel implements ActionListener {
 			ghost_y[i] = ghost_y[i] + (ghost_dy[i] * ghostSpeed[i]);
 			drawGhost(g2d, ghost_x[i] + 1, ghost_y[i] + 1);
 
-			if (pacman_x > (ghost_x[i] - 12) && pacman_x < (ghost_x[i] + 12)
-					&& pacman_y > (ghost_y[i] - 12) && pacman_y < (ghost_y[i] + 12)
+			if (thief_x > (ghost_x[i] - 12) && thief_x < (ghost_x[i] + 12)
+					&& thief_y > (ghost_y[i] - 12) && thief_y < (ghost_y[i] + 12)
 					&& inGame) {
 
 				dying = true;
@@ -306,19 +324,19 @@ public class Board extends JPanel implements ActionListener {
 		g2d.drawImage(ghost, x, y, this);
 	}
 
-	private void movePacman() {
+	private void moveThief() {
 		int pos;
 		short ch;
 
-		if (req_dx == -pacmand_x && req_dy == -pacmand_y) {
-			pacmand_x = req_dx;
-			pacmand_y = req_dy;
-			view_dx = pacmand_x;
-			view_dy = pacmand_y;
+		if (req_dx == -thiefd_x && req_dy == -thiefd_y) {
+			thiefd_x = req_dx;
+			thiefd_y = req_dy;
+			view_dx = thiefd_x;
+			view_dy = thiefd_y;
 		}
 
-		if (pacman_x % BLOCK_SIZE == 0 && pacman_y % BLOCK_SIZE == 0) {
-			pos = pacman_x / BLOCK_SIZE + N_BLOCKS * (int) (pacman_y / BLOCK_SIZE);
+		if (thief_x % BLOCK_SIZE == 0 && thief_y % BLOCK_SIZE == 0) {
+			pos = thief_x / BLOCK_SIZE + N_BLOCKS * (int) (thief_y / BLOCK_SIZE);
 			ch = screenData[pos];
 
 			if ((ch & 16) != 0) {
@@ -331,102 +349,102 @@ public class Board extends JPanel implements ActionListener {
 						|| (req_dx == 1 && req_dy == 0 && (ch & 4) != 0)
 						|| (req_dx == 0 && req_dy == -1 && (ch & 2) != 0)
 						|| (req_dx == 0 && req_dy == 1 && (ch & 8) != 0))) {
-					pacmand_x = req_dx;
-					pacmand_y = req_dy;
-					view_dx = pacmand_x;
-					view_dy = pacmand_y;
+					thiefd_x = req_dx;
+					thiefd_y = req_dy;
+					view_dx = thiefd_x;
+					view_dy = thiefd_y;
 				}
 			}
 
 			// Check for standstill
-			if ((pacmand_x == -1 && pacmand_y == 0 && (ch & 1) != 0)
-					|| (pacmand_x == 1 && pacmand_y == 0 && (ch & 4) != 0)
-					|| (pacmand_x == 0 && pacmand_y == -1 && (ch & 2) != 0)
-					|| (pacmand_x == 0 && pacmand_y == 1 && (ch & 8) != 0)) {
-				pacmand_x = 0;
-				pacmand_y = 0;
+			if ((thiefd_x == -1 && thiefd_y == 0 && (ch & 1) != 0)
+					|| (thiefd_x == 1 && thiefd_y == 0 && (ch & 4) != 0)
+					|| (thiefd_x == 0 && thiefd_y == -1 && (ch & 2) != 0)
+					|| (thiefd_x == 0 && thiefd_y == 1 && (ch & 8) != 0)) {
+				thiefd_x = 0;
+				thiefd_y = 0;
 			}
 		}
-		pacman_x = pacman_x + PACMAN_SPEED * pacmand_x;
-		pacman_y = pacman_y + PACMAN_SPEED * pacmand_y;
+		thief_x = thief_x + thief_SPEED * thiefd_x;
+		thief_y = thief_y + thief_SPEED * thiefd_y;
 	}
 
-	private void drawPacman(Graphics2D g2d) {
+	private void drawThief(Graphics2D g2d) {
 		if (view_dx == -1) {
-			drawPacnanLeft(g2d);
+			drawThiefLeft(g2d);
 		} else if (view_dx == 1) {
-			drawPacmanRight(g2d);
+			drawThiefRight(g2d);
 		} else if (view_dy == -1) {
-			drawPacmanUp(g2d);
+			drawThiefUp(g2d);
 		} else {
-			drawPacmanDown(g2d);
+			drawThiefDown(g2d);
 		}
 	}
 
-	private void drawPacmanUp(Graphics2D g2d) {
-		switch (pacmanAnimPos) {
+	private void drawThiefUp(Graphics2D g2d) {
+		switch (thiefAnimPos) {
 			case 1:
-				g2d.drawImage(pacman2up, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief2up, thief_x + 1, thief_y + 1, this);
 				break;
 			case 2:
-				g2d.drawImage(pacman3up, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief3up, thief_x + 1, thief_y + 1, this);
 				break;
 			case 3:
-				g2d.drawImage(pacman4up, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief4up, thief_x + 1, thief_y + 1, this);
 				break;
 			default:
-				g2d.drawImage(pacman1, pacman_x + 1, pacman_y + 1, this);
-				break;
-		}
-	}
-
-	private void drawPacmanDown(Graphics2D g2d) {
-		switch (pacmanAnimPos) {
-			case 1:
-				g2d.drawImage(pacman2down, pacman_x + 1, pacman_y + 1, this);
-				break;
-			case 2:
-				g2d.drawImage(pacman3down, pacman_x + 1, pacman_y + 1, this);
-				break;
-			case 3:
-				g2d.drawImage(pacman4down, pacman_x + 1, pacman_y + 1, this);
-				break;
-			default:
-				g2d.drawImage(pacman1, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief1, thief_x + 1, thief_y + 1, this);
 				break;
 		}
 	}
 
-	private void drawPacnanLeft(Graphics2D g2d) {
-		switch (pacmanAnimPos) {
+	private void drawThiefDown(Graphics2D g2d) {
+		switch (thiefAnimPos) {
 			case 1:
-				g2d.drawImage(pacman2left, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief2down, thief_x + 1, thief_y + 1, this);
 				break;
 			case 2:
-				g2d.drawImage(pacman3left, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief3down, thief_x + 1, thief_y + 1, this);
 				break;
 			case 3:
-				g2d.drawImage(pacman4left, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief4down, thief_x + 1, thief_y + 1, this);
 				break;
 			default:
-				g2d.drawImage(pacman1, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief1, thief_x + 1, thief_y + 1, this);
 				break;
 		}
 	}
 
-	private void drawPacmanRight(Graphics2D g2d) {
-		switch (pacmanAnimPos) {
+	private void drawThiefLeft(Graphics2D g2d) {
+		switch (thiefAnimPos) {
 			case 1:
-				g2d.drawImage(pacman2right, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief2left, thief_x + 1, thief_y + 1, this);
 				break;
 			case 2:
-				g2d.drawImage(pacman3right, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief3left, thief_x + 1, thief_y + 1, this);
 				break;
 			case 3:
-				g2d.drawImage(pacman4right, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief4left, thief_x + 1, thief_y + 1, this);
 				break;
 			default:
-				g2d.drawImage(pacman1, pacman_x + 1, pacman_y + 1, this);
+				g2d.drawImage(thief1, thief_x + 1, thief_y + 1, this);
+				break;
+		}
+	}
+
+	private void drawThiefRight(Graphics2D g2d) {
+		switch (thiefAnimPos) {
+			case 1:
+				g2d.drawImage(thief2right, thief_x + 1, thief_y + 1, this);
+				break;
+			case 2:
+				g2d.drawImage(thief3right, thief_x + 1, thief_y + 1, this);
+				break;
+			case 3:
+				g2d.drawImage(thief4right, thief_x + 1, thief_y + 1, this);
+				break;
+			default:
+				g2d.drawImage(thief1, thief_x + 1, thief_y + 1, this);
 				break;
 		}
 	}
@@ -434,40 +452,44 @@ public class Board extends JPanel implements ActionListener {
 	private void drawMaze(Graphics2D g2d) {
 		short i = 0;
 		int x, y;
-		
-		int offsetX = (getWidth() - N_BLOCKS * BLOCK_SIZE) / 2;
-		int offsetY = (getHeight() - N_BLOCKS * BLOCK_SIZE) / 2;
-	
-		for (y = 0; y < N_BLOCKS; y++) {
-			for (x = 0; x < N_BLOCKS; x++) {
+
+		for (y = 0; y < SCREEN_SIZE; y += BLOCK_SIZE) {
+			for (x = 0; x < SCREEN_SIZE; x += BLOCK_SIZE) {
 				g2d.setColor(mazeColor);
 				g2d.setStroke(new BasicStroke(2));
 				if ((screenData[i] & 1) != 0) {
-					g2d.drawLine(x * BLOCK_SIZE + offsetX, y * BLOCK_SIZE + offsetY, x * BLOCK_SIZE + offsetX, (y + 1) * BLOCK_SIZE + offsetY - 1);
+					g2d.drawLine(x, y, x, y + BLOCK_SIZE - 1);
 				}
+
 				if ((screenData[i] & 2) != 0) {
-					g2d.drawLine(x * BLOCK_SIZE + offsetX, y * BLOCK_SIZE + offsetY, (x + 1) * BLOCK_SIZE + offsetX - 1, y * BLOCK_SIZE + offsetY);
+					g2d.drawLine(x, y, x + BLOCK_SIZE - 1, y);
 				}
+
 				if ((screenData[i] & 4) != 0) {
-					g2d.drawLine((x + 1) * BLOCK_SIZE + offsetX - 1, y * BLOCK_SIZE + offsetY, (x + 1) * BLOCK_SIZE + offsetX - 1, (y + 1) * BLOCK_SIZE + offsetY - 1);
+					g2d.drawLine(x + BLOCK_SIZE - 1, y, x + BLOCK_SIZE - 1,
+							y + BLOCK_SIZE - 1);
 				}
+
 				if ((screenData[i] & 8) != 0) {
-					g2d.drawLine(x * BLOCK_SIZE + offsetX, (y + 1) * BLOCK_SIZE + offsetY - 1, (x + 1) * BLOCK_SIZE + offsetX - 1, (y + 1) * BLOCK_SIZE + offsetY - 1);
+					g2d.drawLine(x, y + BLOCK_SIZE - 1, x + BLOCK_SIZE - 1,
+							y + BLOCK_SIZE - 1);
 				}
+
 				if ((screenData[i] & 16) != 0) {
 					g2d.setColor(dotColor);
-					g2d.fillRect(x * BLOCK_SIZE + offsetX + 11, y * BLOCK_SIZE + offsetY + 11, 2, 2);
+					g2d.fillRect(x + 11, y + 11, 2, 2);
 				}
+
 				i++;
 			}
 		}
-	}	
+	}
 
 	private void initGame() {
 		pacsLeft = 3;
 		score = 0;
 		initLevel();
-		N_GHOSTS = 6;
+		N_GHOSTS = 0;
 		currentSpeed = 3;
 	}
 
@@ -476,6 +498,7 @@ public class Board extends JPanel implements ActionListener {
 		for (i = 0; i < N_BLOCKS * N_BLOCKS; i++) {
 			screenData[i] = levelData[i];
 		}
+
 		continueLevel();
 	}
 
@@ -498,10 +521,10 @@ public class Board extends JPanel implements ActionListener {
 			ghostSpeed[i] = validSpeeds[random];
 		}
 
-		pacman_x = 7 * BLOCK_SIZE;
-		pacman_y = 11 * BLOCK_SIZE;
-		pacmand_x = 0;
-		pacmand_y = 0;
+		thief_x = 7 * BLOCK_SIZE;
+		thief_y = 11 * BLOCK_SIZE;
+		thiefd_x = 0;
+		thiefd_y = 0;
 		req_dx = 0;
 		req_dy = 0;
 		view_dx = -1;
@@ -510,20 +533,20 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void loadImages() {
-		ghost = new ImageIcon("src/resources/images/64MedusaHead.gif").getImage();
-		pacman1 = new ImageIcon("src/resources/images/Thief/Up/ThiefUp1.png").getImage();
-		pacman2up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp2.png").getImage();
-		pacman3up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp3.png").getImage();
-		pacman4up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp4.png").getImage();
-		pacman2down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown1.png").getImage();
-		pacman3down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown2.png").getImage();
-		pacman4down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown3.png").getImage();
-		pacman2left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft1.png").getImage();
-		pacman3left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft2.png").getImage();
-		pacman4left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft3.png").getImage();
-		pacman2right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight1.png").getImage();
-		pacman3right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight2.png").getImage();
-		pacman4right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight3.png").getImage();
+		ghost = new ImageIcon("src/resources/images/Cat.gif").getImage();
+		thief1 = new ImageIcon("src/resources/images/Thief/Up/ThiefUp1.png").getImage();
+		thief2up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp2.png").getImage();
+		thief3up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp3.png").getImage();
+		thief4up = new ImageIcon("src/resources/images/Thief/Up/ThiefUp4.png").getImage();
+		thief2down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown1.png").getImage();
+		thief3down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown2.png").getImage();
+		thief4down = new ImageIcon("src/resources/images/Thief/Down/ThiefDown3.png").getImage();
+		thief2left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft1.png").getImage();
+		thief3left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft2.png").getImage();
+		thief4left = new ImageIcon("src/resources/images/Thief/Left/ThiefLeft3.png").getImage();
+		thief2right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight1.png").getImage();
+		thief3right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight2.png").getImage();
+		thief4right = new ImageIcon("src/resources/images/Thief/Right/ThiefRight3.png").getImage();
 	}
 
 	@Override
@@ -548,6 +571,10 @@ public class Board extends JPanel implements ActionListener {
 		} else {
 			showIntroScreen(g2d);
 		}
+
+		g2d.setColor(Color.white);
+		g2d.setFont(smallFont);
+		g2d.drawString(howToPlayText, SCREEN_SIZE + 10, 30);
 
 		g2d.drawImage(ii, 5, 5, this);
 		Toolkit.getDefaultToolkit().sync();
