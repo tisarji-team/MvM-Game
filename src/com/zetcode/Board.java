@@ -136,7 +136,7 @@ public class Board extends JPanel implements ActionListener {
 
 	private void initVariables() {
 		screenData = new short[N_BLOCKS * N_BLOCKS];
-		mazeColor = new Color(5, 100, 5);
+		mazeColor = new Color(202, 150, 112);
 		d = new Dimension(400, 400);
 		ghost_x = new int[MAX_GHOSTS];
 		ghost_dx = new int[MAX_GHOSTS];
