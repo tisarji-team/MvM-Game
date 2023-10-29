@@ -1,4 +1,7 @@
 # The Thief Escape
+<img width="948" alt="Demo" src="https://github.com/tisarji-team/The-Thief-Escaped/assets/48820052/5633f951-8109-4fdb-a5f2-2d41f035beca">
+
+# Function
 
 In the provided Java code, we have a game represented by several functions. Each function has a specific role in managing and executing the game. Here's a breakdown of the functions in the code
 
@@ -53,3 +56,13 @@ In the provided Java code, we have a game represented by several functions. Each
 25. `actionPerformed(ActionEvent e)`: This method is part of the `ActionListener` interface and is called by the game's timer. It triggers the repainting of the game board for animation.
 
 These functions collectively make up the logic for a game that involves a thief character navigating a maze, collecting dots, avoiding ghosts, and keeping score. The game is controlled using arrow keys and can be started and paused with specific keys.
+
+# Demo Game
+
+https://github.com/tisarji-team/The-Thief-Escaped/assets/48820052/b254c883-1ac2-4fee-9ca1-7901fabc56e0
+
+# Develop Team By Tisarji-Team
+
+![Credit1](https://github.com/tisarji-team/The-Thief-Escaped/assets/48820052/5af18e93-0a28-4291-b1fe-89e35b4d329c)
+
+
