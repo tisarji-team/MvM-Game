@@ -67,6 +67,6 @@ https://github.com/tisarji-team/The-Thief-Escaped/assets/48820052/b254c883-1ac2-
 
 # Credit
 
-https://github.com/armin-reichert/pacman
-https://github.com/hecoding/Pac-Man
-https://zetcode.com/javagames/tetris/
+- https://github.com/armin-reichert/pacman
+- https://github.com/hecoding/Pac-Man
+- https://zetcode.com/javagames/tetris/
